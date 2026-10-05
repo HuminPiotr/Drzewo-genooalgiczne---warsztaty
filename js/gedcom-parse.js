@@ -38,7 +38,7 @@
   const kids = (n, tag) => (n ? n.children.filter((c) => c.tag === tag) : []);
   const val = (n, tag) => { const c = child(n, tag); return c && c.value ? c.value : null; };
   const ptr = (v) => (v ? v.replace(/@/g, '') : null);
-  const stripHtml = (s) => (s ? s.replace(/<\/p>\s*<p>/g, '\n').replace(/<[^>]+>/g, '').trim() : null);
+  const stripHtml = (s) => (s ? s.replace(/<\/p>/gi, '\n').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').replace(/\n{2,}/g, '\n').trim() : null);
 
   function readEvent(n) {
     const ev = {

@@ -74,6 +74,7 @@ test('źródła: tytuł i tekst bez HTML', () => {
   const s = parseGedcom(realGedcom()).sources.S500001;
   assert.equal(s.author, 'Magdalena Wachowska');
   assert.doesNotMatch(s.text, /<p>/);
+  assert.match(s.text, /Wachowska\nDrzewo genealogiczne/, 'akapity rozdzielone nową linią, bez zlepionych słów');
 });
 
 test('wadliwy GEDCOM: brak NAME, wskaźnik do nieistniejącej osoby', () => {
