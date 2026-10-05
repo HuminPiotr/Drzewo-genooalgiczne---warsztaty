@@ -59,3 +59,4 @@ body.profile-open .minimap { right: calc(var(--drawer-w) + 16px); }
   .tree-hint { display: none; }
   body.profile-open .minimap { right: 10px; }
 }
+@media (min-width: 901px) { body.profile-open .tree-header { padding-right: calc(var(--drawer-w) + 16px); } }

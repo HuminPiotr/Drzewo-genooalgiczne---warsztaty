@@ -35,3 +35,39 @@
 /* ── Ładowanie i błąd startu ── */
 .spinner { width: 36px; height: 36px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--accent); animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Panel profilu ── */
+.profile { position: fixed; z-index: 50; top: var(--topbar-h); right: 0; bottom: 0; width: var(--drawer-w); overflow: auto; background: var(--surface); border-left: 1px solid var(--border); box-shadow: var(--shadow-2); animation: drawer-in .22s ease; }
+@keyframes drawer-in { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+.profile-head { position: relative; padding: 28px 24px 20px; text-align: center; border-bottom: 1px solid var(--border); background: linear-gradient(var(--unknown-soft), var(--surface) 70%); }
+.profile-head.sex-M { background: linear-gradient(var(--male-soft), var(--surface) 70%); }
+.profile-head.sex-F { background: linear-gradient(var(--female-soft), var(--surface) 70%); }
+.profile-head .avatar-xl { margin: 0 auto 12px; }
+.profile-close { position: absolute; top: 10px; right: 10px; }
+.profile-head h2 { margin: 0; font-size: 24px; line-height: 1.25; }
+.profile-maiden { margin: 2px 0 0; color: var(--text-2); }
+.profile-years { margin: 6px 0 0; color: var(--text-2); font-weight: 500; }
+.kin-badge { display: inline-block; margin: 12px 0 0; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-strong); font-weight: 600; font-size: 14px; }
+.profile-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 16px; }
+.profile-body { padding: 8px 24px 40px; }
+.profile-body section { padding: 18px 0; border-bottom: 1px solid var(--border); }
+.profile-body section:last-child { border-bottom: 0; }
+.profile-body h3 { margin: 0 0 12px; font-size: 17px; }
+.profile-body h4 { margin: 14px 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); }
+.facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.fact { display: grid; grid-template-columns: 110px 1fr; gap: 2px 12px; }
+.fact-label { font-weight: 600; color: var(--text-2); }
+.fact-extra { grid-column: 2; font-size: 14px; color: var(--text-3); }
+.rel-list { display: grid; gap: 8px; }
+.rel-list .person-card { min-height: 60px; padding: 8px 12px 8px 14px; }
+.rel-list .avatar { width: 38px; height: 38px; font-size: 13px; }
+.profile-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.profile-photo { padding: 0; border: 0; border-radius: var(--radius-sm); overflow: hidden; aspect-ratio: 1; cursor: zoom-in; background: var(--surface-2); }
+.profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+.memory { margin: 0 0 10px; padding: 10px 14px; border-left: 4px solid var(--accent); background: var(--surface-2); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-style: italic; }
+.note { margin: 0 0 8px; color: var(--text-2); white-space: pre-line; }
+.link-list, .sources { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+@media (max-width: 900px) {
+  .profile { top: auto; left: 0; width: auto; max-height: 88dvh; border-left: 0; border-radius: var(--radius) var(--radius) 0 0; bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); animation-name: sheet-in; }
+  @keyframes sheet-in { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+}
