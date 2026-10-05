@@ -8,6 +8,7 @@
 
   const EVENT_TAGS = ['BIRT', 'CHR', 'BAPM', 'DEAT', 'BURI', 'RESI', 'OCCU', 'EVEN'];
   const FAMILY_EVENT_TAGS = ['MARR', 'MARL', 'ENGA', 'DIV'];
+  const MEMORY_PREFIX = 'Wspomnienie: ';
   const LINE = /^\s*(\d+)\s+(?:(@[^@\s]+@)\s+)?(\S+)(?: (.*))?$/;
 
   function parseRecords(text) {
@@ -86,8 +87,9 @@
         primary: val(o, '_PRIM') === 'Y' || val(o, '_PERSONALPHOTO') === 'Y',
       })),
       sources: kids(n, 'SOUR').filter((s) => s.value).map((s) => ({ sourceId: ptr(s.value), page: val(s, 'PAGE') })),
-      notes: kids(n, 'NOTE').map((x) => x.value).filter(Boolean),
-      memories: [],
+      notes: kids(n, 'NOTE').map((x) => x.value).filter((v) => v && !v.startsWith(MEMORY_PREFIX)),
+      memories: kids(n, 'NOTE').map((x) => x.value).filter((v) => v && v.startsWith(MEMORY_PREFIX))
+        .map((v) => v.slice(MEMORY_PREFIX.length)),
       deceased,
       famc: [],
       fams: [],
@@ -135,5 +137,5 @@
     return finalizeModel(model);
   }
 
-  return { parseRecords, parseGedcom, finalizeModel, EVENT_TAGS, FAMILY_EVENT_TAGS };
+  return { parseRecords, parseGedcom, finalizeModel, EVENT_TAGS, FAMILY_EVENT_TAGS, MEMORY_PREFIX };
 });
