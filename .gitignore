@@ -1,6 +1,6 @@
-# Dane osobowe rodziny – poza repozytorium
+# Surowe eksporty GEDCOM zawierają adresy e-mail – nie wersjonujemy ich
+# (aplikacja używa data/rodzina.js wygenerowanego bez e-maili)
 *.ged
-data/
-photos/
-.DS_Store
 !tests/fixtures/*.ged
+.DS_Store
+.claude/settings.local.json

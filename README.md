@@ -19,7 +19,7 @@ Bez Terminala: w aplikacji menu ⋯ → „Importuj GEDCOM…”. Wtedy zdjęcia
 Zmiany z trybu „Edytuj” są zapisywane tylko w tej przeglądarce. Menu ⋯ → „Eksportuj kopię (JSON)” lub „Eksportuj GEDCOM” zapisuje je do pliku. Skany i zdjęcia dodane do historii zostają w przeglądarce i nie trafiają do eksportu.
 
 ## Prywatność
-Pliki `data/`, `photos/` i `*.ged` zawierają dane osobowe i są w `.gitignore`. Adresy e-mail z GEDCOM nie są wczytywane. Przed publikacją w internecie trzeba ukryć dane osób żyjących (`Drzewo.person.isLiving`).
+Repozytorium zawiera dane rodzinne (`data/`, `photos/`): imiona, nazwiska, daty, miejsca i zdjęcia, także osób żyjących. Jeśli publikujesz je (np. na GitHub Pages), są widoczne dla każdego z linkiem, również przy prywatnym repo. Adresy e-mail są usuwane z `data/rodzina.js` przez `scripts/build-data.js`, a surowe pliki `*.ged` są w `.gitignore`.
 
 ## Testy
 `node --test tests/*.test.js`
