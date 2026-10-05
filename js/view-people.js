@@ -45,7 +45,7 @@
     U.$('#psurname', el).innerHTML = U.h`<option value="">Wszystkie nazwiska</option>${S.surnames(m).map((s) => U.h`<option value="${s.name}">${s.name} (${s.count})</option>`)}`.toString();
     U.$('#psurname', el).value = state.surname;
     const places = S.placeIndex(m).filter((p) => !p.vague).sort((a, b) => a.name.localeCompare(b.name, 'pl'));
-    U.$('#pplace', el).innerHTML = U.h`<option value="">Wszystkie miejscowości</option>${places.map((p) => U.h`<option value="${p.name}">${p.name}</option>`)}`.toString();
+    U.$('#pplace', el).innerHTML = U.h`<option value="">Wszystkie miejsca</option>${places.map((p) => U.h`<option value="${p.name}">${p.name}</option>`)}`.toString();
     U.$('#pplace', el).value = state.place;
   }
 

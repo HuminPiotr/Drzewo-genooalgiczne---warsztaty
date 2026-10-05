@@ -23,12 +23,8 @@
     });
     document.title = `${TITLES[slug]} · Drzewo rodziny`;
     const v = D.views[name];
-    if (v) {
-      if (!mounted.has(name)) { v.mount(U.$(`[data-view="${name}"]`)); mounted.add(name); }
-      if (v.show) v.show(param);
-    } else {
-      U.$(`[data-view="${name}"]`).innerHTML = U.h`<div class="empty-state"><h2>${TITLES[slug]}</h2><p>Ten widok pojawi się w kolejnym kroku.</p></div>`.toString();
-    }
+    if (!mounted.has(name)) { v.mount(U.$(`[data-view="${name}"]`)); mounted.add(name); }
+    if (v.show) v.show(param);
     current = name;
   }
 

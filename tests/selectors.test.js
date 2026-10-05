@@ -62,3 +62,11 @@ test('galeria i dokumenty', () => {
   assert.equal(d.sources.length, 1);
   assert.equal(d.sources[0].personIds.length, 34);
 });
+
+test('filterPeople: osoby bez nazwiska na końcu listy', () => {
+  const m = structuredClone(mini);
+  m.people.I99 = { ...m.people.I1, id: 'I99', given: 'Ktoś', surname: '', marriedName: null, famc: [], fams: [] };
+  const list = S.filterPeople(m, {});
+  assert.equal(list[list.length - 1].id, 'I99');
+  assert.equal(S.filterPeople(m, { sort: 'surname' })[0].id !== 'I99', true);
+});

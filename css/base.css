@@ -77,3 +77,10 @@ textarea.input { min-height: 96px; resize: vertical; line-height: 1.5; }
 }
 @media (max-width: 420px) { .brand-text { display: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* Cele dotyku ≥44px na telefonach i ekranach dotykowych */
+@media (max-width: 900px), (pointer: coarse) {
+  .btn-sm, .chip { min-height: 44px; }
+  .search-trigger { height: 44px; }
+  .brand { min-width: 44px; min-height: 44px; justify-content: center; }
+}

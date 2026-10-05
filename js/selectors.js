@@ -92,7 +92,7 @@
       if (withPhoto && !p.photos.length) return false;
       return true;
     });
-    const bySurname = (a, b) => (a.surname || '').localeCompare(b.surname || '', 'pl') || cmpName(a, b);
+    const bySurname = (a, b) => (!a.surname !== !b.surname ? (a.surname ? -1 : 1) : (a.surname || '').localeCompare(b.surname || '', 'pl') || cmpName(a, b));
     const byBirth = (a, b) => (P.birthYear(a) || 9999) - (P.birthYear(b) || 9999) || cmpName(a, b);
     return list.sort(sort === 'birth' ? byBirth : bySurname);
   }
