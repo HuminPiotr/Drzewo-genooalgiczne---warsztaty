@@ -1,0 +1,5 @@
+# Dane osobowe rodziny – poza repozytorium
+*.ged
+data/
+photos/
+.DS_Store
