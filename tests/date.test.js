@@ -34,3 +34,32 @@ test('nieczytelne daty nie wywracają parsera', () => {
 test('małe litery i nadmiarowe spacje', () => {
   assert.equal(parseDate('  26 sep 1897 ').display, '26 wrz 1897');
 });
+
+const { fromUserInput, toUserInput } = require('../js/gedcom-date.js');
+
+test('fromUserInput: polskie formaty → GEDCOM', () => {
+  assert.equal(fromUserInput('12.03.1901'), '12 MAR 1901');
+  assert.equal(fromUserInput('1.3.1901'), '1 MAR 1901');
+  assert.equal(fromUserInput('03.1901'), 'MAR 1901');
+  assert.equal(fromUserInput('1901'), '1901');
+  assert.equal(fromUserInput('ok. 1900'), 'ABT 1900');
+  assert.equal(fromUserInput('około 1900'), 'ABT 1900');
+  assert.equal(fromUserInput('przed 5.02.1976'), 'BEF 5 FEB 1976');
+  assert.equal(fromUserInput('po 1900'), 'AFT 1900');
+  assert.equal(fromUserInput('12 marca 1901'), '12 MAR 1901');
+  assert.equal(fromUserInput('3 października 1950'), '3 OCT 1950');
+  assert.equal(fromUserInput('8 MAY 1945'), '8 MAY 1945');
+  assert.equal(fromUserInput('  '), null);
+  assert.equal(fromUserInput('31.13.1901'), '31.13.1901');
+  assert.equal(parseDate(fromUserInput('31.13.1901')).year, null);
+});
+
+test('toUserInput i powrót', () => {
+  assert.equal(toUserInput(parseDate('8 MAY 1945')), '08.05.1945');
+  assert.equal(toUserInput(parseDate('ABT SEP 1897')), 'ok. 09.1897');
+  assert.equal(toUserInput(parseDate('1908')), '1908');
+  assert.equal(toUserInput(parseDate('xxxx')), 'xxxx');
+  assert.equal(toUserInput(null), '');
+  for (const raw of ['8 MAY 1945', 'ABT SEP 1897', 'BEF 1 FEB 1976', '1908', 'AFT 1900'])
+    assert.equal(parseDate(fromUserInput(toUserInput(parseDate(raw)))).display, parseDate(raw).display, raw);
+});

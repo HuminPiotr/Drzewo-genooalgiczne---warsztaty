@@ -164,3 +164,24 @@
 .person-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .person-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 6px 0 12px; border-radius: 999px; background: var(--surface-2); }
 .person-chip button { border: 0; background: none; cursor: pointer; width: 28px; height: 28px; border-radius: 50%; }
+
+/* ── Tryb edycji ── */
+.menu-wrap { position: relative; }
+.menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 60; min-width: 270px; padding: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-2); }
+.menu button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: none; text-align: left; cursor: pointer; }
+.menu button:hover, .menu button:focus-visible { background: var(--surface-2); }
+.menu hr { border: 0; border-top: 1px solid var(--border); margin: 6px 0; }
+.menu .danger-text { color: var(--danger); }
+body.editing .topbar { box-shadow: inset 0 -3px 0 var(--accent); }
+.rel-item { position: relative; }
+.rel-unlink { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: var(--surface); }
+.rel-add { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.changes-banner { position: fixed; left: 50%; transform: translateX(-50%); bottom: 16px; z-index: 45; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; max-width: calc(100vw - 32px); padding: 10px 12px 10px 16px; background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius-sm); box-shadow: var(--shadow-2); }
+.changes-banner p { margin: 0; font-size: 14px; }
+body.profile-open .changes-banner { left: calc((100vw - var(--drawer-w)) / 2); }
+.date-preview { min-height: 18px; }
+@media (max-width: 900px) {
+  .changes-banner { bottom: calc(var(--tabbar-h) + 12px + env(safe-area-inset-bottom)); }
+  body.profile-open .changes-banner { display: none; }
+  .edit-label { display: none; }
+}

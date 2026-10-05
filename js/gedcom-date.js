@@ -42,5 +42,45 @@
     return make(s, p, q ? q[1] : null, (q ? QUAL[q[1]] + ' ' : '') + fmt(p));
   }
 
-  return { parseDate, MONTHS_PL };
+  const MON = Object.keys(MONTHS);
+  const PL3 = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paz', 'lis', 'gru'];
+  const PREFIX_IN = { 'ok.': 'ABT', ok: 'ABT', 'około': 'ABT', 'ca.': 'ABT', ca: 'ABT', przed: 'BEF', po: 'AFT' };
+  const PREFIX_OUT = { ABT: 'ok. ', CAL: 'ok. ', EST: 'ok. ', BEF: 'przed ', AFT: 'po ' };
+  const fold3 = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ł/g, 'l').toLowerCase().slice(0, 3);
+  const pad2 = (n) => String(n).padStart(2, '0');
+
+  // Polski zapis wpisany przez użytkownika → tekst daty GEDCOM (nierozpoznane zostaje bez zmian)
+  function fromUserInput(input) {
+    const s = String(input == null ? '' : input).trim();
+    if (!s) return null;
+    const low = s.toLowerCase().replace(/\s+/g, ' ');
+    let prefix = '', body = low;
+    const q = low.match(/^(ok\.?|około|ca\.?|przed|po) (.+)$/);
+    if (q) { prefix = PREFIX_IN[q[1]] + ' '; body = q[2]; }
+    let m = body.match(/^(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4})$/);
+    if (m && +m[2] >= 1 && +m[2] <= 12 && +m[1] >= 1 && +m[1] <= 31) return `${prefix}${+m[1]} ${MON[+m[2] - 1]} ${m[3]}`;
+    m = body.match(/^(\d{1,2})[.\-/](\d{4})$/);
+    if (m && +m[1] >= 1 && +m[1] <= 12) return `${prefix}${MON[+m[1] - 1]} ${m[2]}`;
+    m = body.match(/^(?:(\d{1,2}) )?([a-ząćęłńóśźż]+)\.? (\d{4})$/i);
+    if (m) {
+      let idx = PL3.indexOf(fold3(m[2]));
+      if (idx < 0) idx = MON.indexOf(m[2].slice(0, 3).toUpperCase());
+      if (idx >= 0) return `${prefix}${m[1] ? +m[1] + ' ' : ''}${MON[idx]} ${m[3]}`;
+    }
+    if (/^\d{3,4}$/.test(body)) return prefix + body;
+    return s;
+  }
+
+  // DateInfo → tekst do pola formularza (dd.mm.rrrr)
+  function toUserInput(date) {
+    if (!date) return '';
+    const m = String(date.raw).toUpperCase().match(/^(?:(ABT|CAL|EST|BEF|AFT) )?(?:(\d{1,2}) )?(?:([A-Z]{3}) )?(\d{3,4})$/);
+    if (!m || (m[3] && !MONTHS[m[3]])) return date.raw;
+    const pre = PREFIX_OUT[m[1]] || '';
+    if (m[2] && m[3]) return `${pre}${pad2(m[2])}.${pad2(MONTHS[m[3]])}.${m[4]}`;
+    if (m[3]) return `${pre}${pad2(MONTHS[m[3]])}.${m[4]}`;
+    return pre + m[4];
+  }
+
+  return { parseDate, MONTHS_PL, fromUserInput, toUserInput };
 });
