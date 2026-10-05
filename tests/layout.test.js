@@ -12,22 +12,47 @@ function memStorage() {
     get length() { return d.size; }, key: (i) => [...d.keys()][i] ?? null };
 }
 
-test('buildElkGraph: węzły i krawędzie', () => {
+test('buildUnits: para w jednej jednostce (mąż, żona), single osobno', () => {
+  const { units } = L.buildUnits(mini);
+  assert.equal(units.length, 10);
+  assert.deepEqual(units.find((u) => u.persons.includes('I1')).persons, ['I1', 'I2']);
+  assert.deepEqual(units.find((u) => u.persons.includes('I9')).persons, ['I9']);
+  const f5 = units.find((u) => u.persons.includes('I9')).families.find((f) => f.id === 'F5');
+  assert.equal(f5.both, false); assert.equal(f5.hubX, L.CARD_W / 2);
+  const f1 = units.find((u) => u.persons.includes('I1')).families[0];
+  assert.equal(f1.both, true); assert.equal(f1.hubX, L.CARD_W + L.COUPLE_GAP / 2);
+});
+
+test('buildUnits: ponowne małżeństwo daje łańcuch trzech osób z osobą w środku', () => {
+  const m = structuredClone(mini);
+  m.people.I16 = { ...m.people.I10, id: 'I16', given: 'Ida', famc: [], fams: [] };
+  m.families.F9 = { id: 'F9', husb: 'I3', wife: 'I16', children: [], events: [], notes: [] };
+  require('../js/gedcom-parse.js').finalizeModel(m);
+  const unit = L.buildUnits(m).units.find((u) => u.persons.includes('I3'));
+  assert.equal(unit.persons.length, 3);
+  assert.equal(unit.persons[1], 'I3');
+  assert.equal(unit.families.length, 2);
+  assert.ok(unit.families.every((f) => f.both));
+});
+
+test('buildElkGraph: jednostki, porty i krawędzie rodzic→dziecko', () => {
   const g = L.buildElkGraph(mini);
-  assert.equal(g.children.filter((n) => n.id.startsWith('p:')).length, 15);
-  assert.equal(g.children.filter((n) => n.id.startsWith('f:')).length, 6);
-  assert.equal(g.edges.length, 20);
-  const ids = g.children.map((n) => n.id);
-  assert.equal(ids.indexOf('p:I2'), ids.indexOf('p:I1') + 1, 'małżonkowie obok siebie w kolejności modelu');
+  assert.equal(g.children.length, 10);
+  const edges = g.edges;
+  assert.equal(edges.length, 9);
+  assert.ok(edges.every((e) => e.sources[0].startsWith('pf:') && e.targets[0].startsWith('pc:')));
+  const portIds = new Set(g.children.flatMap((n) => n.ports.map((p) => p.id)));
+  assert.ok(edges.every((e) => portIds.has(e.sources[0]) && portIds.has(e.targets[0])), 'każda krawędź wskazuje istniejące porty');
+  assert.ok(g.children.every((n) => n.layoutOptions['elk.portConstraints'] === 'FIXED_POS'));
 });
 
 test('rodzina bez nikogo jest pomijana', () => {
   const m = structuredClone(mini);
   m.families.F99 = { id: 'F99', husb: null, wife: null, children: [], events: [], notes: [] };
-  assert.ok(!L.buildElkGraph(m).children.some((n) => n.id === 'f:F99'));
+  assert.equal(L.buildElkGraph(m).children.length, 10);
 });
 
-test('układ prawdziwych danych: wszyscy, bez nakładania, małżonkowie w jednym rzędzie', async () => {
+test('układ prawdziwych danych: wszyscy, bez nakładania, każda para obok siebie', async () => {
   const real = parseGedcom(realGedcom());
   const t0 = Date.now();
   const res = await L.layoutTree(real, { ELK });
@@ -40,9 +65,13 @@ test('układ prawdziwych danych: wszyscy, bez nakładania, małżonkowie w jedny
     assert.ok(!overlap, `${a.id} nachodzi na ${b.id}`);
   }
   const couples = Object.values(real.families).filter((f) => f.husb && f.wife);
-  const sameRow = couples.filter((f) => res.nodes['p:' + f.husb].y === res.nodes['p:' + f.wife].y).length;
-  console.log(`layout: ${ms} ms, ${res.width}×${res.height}, małżonkowie w rzędzie: ${sameRow}/${couples.length}`);
-  assert.ok(sameRow / couples.length >= 0.9, `${sameRow}/${couples.length}`);
+  const adjacent = couples.filter((f) => {
+    const a = res.nodes['p:' + f.husb], b = res.nodes['p:' + f.wife];
+    return a.y === b.y && Math.abs(a.x - b.x) === L.CARD_W + L.COUPLE_GAP;
+  }).length;
+  console.log(`layout: ${ms} ms, ${res.width}×${res.height}, pary obok siebie: ${adjacent}/${couples.length}`);
+  assert.equal(adjacent, couples.length);
+  assert.equal(Object.values(res.nodes).filter((n) => n.kind === 'family').length, Object.values(real.families).filter((f) => f.husb || f.wife).length);
   assert.ok(res.edges.every((e) => e.points.length >= 2));
   assert.ok(ms < 15000);
 });
