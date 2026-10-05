@@ -87,3 +87,21 @@ test('pusty lub obcy plik → czytelny błąd', () => {
   assert.throws(() => parseGedcom(''), /nie wygląda na GEDCOM/);
   assert.throws(() => parseGedcom('<html></html>'), /nie wygląda na GEDCOM/);
 });
+
+test('nazwisko po ślubie bez dopisków "zd", "z d." i nawiasów', () => {
+  const txt = (marn) => `0 HEAD\n0 @I1@ INDI\n1 NAME Ala /Nowak/\n2 GIVN Ala\n2 SURN Nowak\n2 _MARNM ${marn}\n0 TRLR\n`;
+  const married = (marn) => parseGedcom(txt(marn)).people.I1.marriedName;
+  assert.equal(married('Kąpińska zd Perłowska'), 'Kąpińska');
+  assert.equal(married('Kąpińska z d.Słomka'), 'Kąpińska');
+  assert.equal(married('Kąpińska z d. Słomka'), 'Kąpińska');
+  assert.equal(married('Burczyńska (Petrykowska)'), 'Burczyńska');
+  assert.equal(married('Domżalska'), 'Domżalska');
+  assert.equal(married('Zdunek'), 'Zdunek', 'nazwisko zaczynające się od "Zd" zostaje');
+  assert.equal(married('Nowak Zdunek'), 'Nowak Zdunek');
+});
+
+test('prawdziwy eksport: żadne nazwisko po ślubie nie zawiera dopisków', () => {
+  const bad = Object.values(parseGedcom(realGedcom()).people).filter((p) => p.marriedName && /\bz\s?d\b|\(/i.test(p.marriedName));
+  assert.deepEqual(bad.map((p) => p.id), []);
+  assert.equal(parseGedcom(realGedcom()).people.I500180.marriedName, 'Perłowska');
+});

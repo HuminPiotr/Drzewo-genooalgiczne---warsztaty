@@ -59,6 +59,12 @@
   }
   const hasContent = (e) => !!(e.date || e.place || e.note || e.age || e.cause || e.value || e.typeLabel);
 
+  // MyHeritage zapisuje czasem "Kąpińska zd Perłowska", "… z d.Słomka" albo "Burczyńska (Petrykowska)"
+  function cleanMarriedName(raw) {
+    const s = (raw || '').split(/(?:\s+|^)(?:z\s?d|zd)\b\.?\s*|\s*\(/i)[0].trim();
+    return s || null;
+  }
+
   function readPerson(n) {
     const nameNode = child(n, 'NAME');
     const full = nameNode ? nameNode.value : '';
@@ -78,7 +84,7 @@
       id: ptr(n.xref),
       given,
       surname,
-      marriedName: (val(nameNode, '_MARNM') || '').trim() || null,
+      marriedName: cleanMarriedName(val(nameNode, '_MARNM')),
       sex: sex === 'M' || sex === 'F' ? sex : 'U',
       events,
       photos: kids(n, 'OBJE').filter((o) => val(o, 'FILE')).map((o) => ({
