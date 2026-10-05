@@ -3,3 +3,4 @@
 data/
 photos/
 .DS_Store
+!tests/fixtures/*.ged
